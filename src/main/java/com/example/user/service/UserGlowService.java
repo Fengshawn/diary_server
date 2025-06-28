@@ -7,6 +7,10 @@ import com.example.user.repository.UserGlowLogRepository;
 import com.example.user.repository.UserGlowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Service
 public class UserGlowService {
@@ -15,7 +19,35 @@ public class UserGlowService {
     private UserGlowRepository userGlowRepository;
 
     @Autowired
-    private UserGlowLogRepository glowLogRepository;
+    private UserGlowLogRepository userGlowLogRepository;
+
+    /**
+     * 检查用户积分是否足够，并扣除指定积分
+     * @param userId 用户ID
+     * @param cost 要扣除的积分数
+     * @throws IllegalStateException 如果积分不足
+     */
+    @Transactional
+    public void checkAndDeductPoint(Long userId, int cost) {
+        UserGlow glow = userGlowRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("用户积分信息不存在"));
+
+        if (glow.getGlowPoint() < cost) {
+            throw new IllegalStateException("积分不足，当前积分为：" + glow.getGlowPoint());
+        }
+
+        glow.setGlowPoint(glow.getGlowPoint() - cost);
+        userGlowRepository.save(glow);
+
+        // 写积分变更日志
+        UserGlowLog log = new UserGlowLog();
+        log.setUserId(userId);
+        log.setChangeType(GlowChangeType.CONSUME);
+        log.setChangeValue(-cost);
+        log.setDescription("生成成就卡消耗积分");
+        log.setCreatedAt(new Date(System.currentTimeMillis()));
+        userGlowLogRepository.save(log);
+    }
 
     public void addRecordPoint(Long userId) {
         updateGlow(userId, 1, GlowChangeType.RECORD, "记录日记");
@@ -50,7 +82,7 @@ public class UserGlowService {
         log.setChangeValue(delta);
         log.setCurrentTotal(glow.getGlowPoint());
         log.setDescription(desc);
-        glowLogRepository.save(log);
+        userGlowLogRepository.save(log);
     }
 
     private int calculateGlowLevel(int point) {
