@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,6 +27,30 @@ public class NoteController {
                                          @RequestPart("file") MultipartFile file) {
         String imageUrl = noteService.saveNoteImage(noteId, file);
         return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<NoteDTO> getNote(@PathVariable Long id) {
+        NoteDTO note = noteService.getNoteById(id);
+        return ResponseEntity.ok(note);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<NoteDTO>> listNotes(@RequestParam("userId") Long userId) {
+        List<NoteDTO> notes = noteService.getNotesByUserId(userId);
+        return ResponseEntity.ok(notes);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateNote(@PathVariable Long id, @RequestBody NoteDTO dto) {
+        noteService.updateNote(id, dto);
+        return ResponseEntity.ok("更新成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteNote(@PathVariable Long id) {
+        noteService.deleteNote(id);
+        return ResponseEntity.ok("删除成功");
     }
 }
 ////Todo 生成成就卡是不是可以直接用Python api去和llm交互

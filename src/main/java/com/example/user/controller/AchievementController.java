@@ -1,6 +1,7 @@
 package com.example.user.controller;
 
 
+import com.example.user.model.Achievement;
 import com.example.user.service.AchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,4 +28,19 @@ public class AchievementController {
         return ResponseEntity.ok("已放弃");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCard(@PathVariable Long id) {
+        return ResponseEntity.ok(achievementService.getCardById(id));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getCardsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(achievementService.getCardsByUserId(userId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody Achievement updatedData) {
+        achievementService.updateCard(id, updatedData);
+        return ResponseEntity.ok("更新成功");
+    }
 }

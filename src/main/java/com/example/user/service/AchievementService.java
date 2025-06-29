@@ -1,6 +1,5 @@
 package com.example.user.service;
 
-import com.example.user.enums.GlowChangeType;
 import com.example.user.model.Achievement;
 import com.example.user.model.Note;
 import com.example.user.repository.AchievementRepository;
@@ -9,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +58,30 @@ public class AchievementService {
     public void discard(Long cardId) {
         Achievement achievement = cardRepository.findById(cardId).orElseThrow();
         cardRepository.delete(achievement); // 或设置软删除标志
+    }
+
+    //根据卡片ID获取卡片
+    public Achievement getCardById(Long cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("卡片不存在"));
+    }
+
+    //获取某个用户的所有卡片
+    public List<Achievement> getCardsByUserId(Long userId) {
+        return cardRepository.findByUserId(userId);
+    }
+
+    //可选：更新卡片信息（如果卡片允许被编辑）
+    public void updateCard(Long cardId, Achievement updatedData) {
+        Achievement card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("卡片不存在"));
+
+        card.setAchievementTitle(updatedData.getAchievementTitle());
+        card.setAchievementDescription(updatedData.getAchievementDescription());
+        card.setAchievementTags(updatedData.getAchievementTags());
+        card.setLlmRawOutput(updatedData.getLlmRawOutput());
+
+        cardRepository.save(card);
     }
 }
 
