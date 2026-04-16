@@ -18,6 +18,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByUserIdAndLastActiveAtAfterAndStatusOrderByLastActiveAtDesc(
             Long userId, LocalDateTime since, TaskStatus status);
 
-    List<Task> findByUserIdAndLastActiveAtBeforeAndStatus(
+    List<Task> findByUserIdAndLastActiveAtBeforeAndStatusOrderByLastActiveAtDesc(
             Long userId, LocalDateTime before, TaskStatus status);
 }

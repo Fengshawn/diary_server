@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "task", indexes = {
     @Index(name = "idx_task_user_id", columnList = "userId"),
+    @Index(name = "idx_task_user_id", columnList = "userId"),
     @Index(name = "idx_task_user_status", columnList = "userId, status"),
     @Index(name = "idx_task_last_active", columnList = "userId, lastActiveAt")
 })
@@ -46,4 +47,9 @@ public class Task {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
