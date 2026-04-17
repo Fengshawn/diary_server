@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
     name = "task",
     indexes = {
         @Index(name = "idx_task_user_status_lastactive",
-               columnList = "initiator_user_id, status, last_active_at DESC"),
+               columnList = "initiator_user_id, status, last_active_at"),
         @Index(name = "idx_task_channel_lastactive",
-               columnList = "channel_id, last_active_at DESC")
+               columnList = "channel_id, last_active_at")
     }
 )
 public class Task {
